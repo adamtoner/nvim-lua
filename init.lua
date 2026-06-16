@@ -693,7 +693,9 @@ do
   ---@type table<string, vim.lsp.Config>
   local servers = {
     -- clangd = {},
-    -- gopls = {},
+    gopls = {},
+    ts_ls = {},
+    bashls = {},
     -- pyright = {},
     -- rust_analyzer = {},
     --
@@ -782,6 +784,9 @@ do
     format_on_save = function(bufnr)
       -- You can specify filetypes to autoformat on save here:
       local enabled_filetypes = {
+        go = true,
+        sh = true,
+        bash = true,
         -- lua = true,
         -- python = true,
       }
@@ -796,6 +801,10 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
+      lua = { 'stylua' },
+        go = { 'gofumpt', 'goimports' },
+        sh = { 'shfmt' },
+        bash = { 'shfmt' }
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
