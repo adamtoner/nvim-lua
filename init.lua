@@ -698,7 +698,15 @@ do
   ---@type table<string, vim.lsp.Config>
   local servers = {
     -- clangd = {},
-    gopls = {},
+    gopls = {
+      settings = {
+        gopls = {
+          analyses = {
+            composites = false
+          }
+        }
+      }
+    },
     ts_ls = {},
     bashls = {},
     -- pyright = {},
