@@ -452,6 +452,13 @@ do
 
   -- ... and there is more!
   --  Check out: https://github.com/nvim-mini/mini.nvim
+  vim.pack.add { gh 'stevearc/oil.nvim' }
+  require('oil').setup {
+    view_options = {
+      show_hidden = true,
+    },
+  }
+  vim.keymap.set('n', '-', '<Cmd>Oil<CR>', { desc = 'Open parent directory' })
 end
 
 -- ============================================================
@@ -992,7 +999,17 @@ do
   -- require 'kickstart.plugins.indent_line'
   -- require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
-  require 'kickstart.plugins.neo-tree'
+  require 'kickstart.plugins.leap'
+  require 'kickstart.plugins.harpoon'
+  require('kickstart.plugins.neo-tree').setup {
+    filesystem = {
+      filtered_items = {
+        visible = true,
+        hide_dotfiles = false,
+        hide_gitignored = false,
+      },
+    },
+  }
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

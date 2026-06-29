@@ -9,12 +9,18 @@ vim.pack.add {
 
 vim.keymap.set('n', '\\', '<Cmd>Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
 
-require('neo-tree').setup {
-  filesystem = {
-    window = {
-      mappings = {
-        ['\\'] = 'close_window',
+local M = {}
+
+function M.setup(opts)
+  require('neo-tree').setup(vim.tbl_deep_extend('force', {
+    filesystem = {
+      window = {
+        mappings = {
+          ['\\'] = 'close_window',
+        },
       },
     },
-  },
-}
+  }, opts or {}))
+end
+
+return M
