@@ -850,7 +850,7 @@ do
         -- lua = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
-        return { timeout_ms = 500 }
+        return { timeout_ms = 10000 }
       else
         return nil
       end
@@ -873,7 +873,7 @@ do
     },
   }
 
-  vim.keymap.set({ 'n', 'v' }, '<leader>f', function() require('conform').format { async = true } end, { desc = '[F]ormat buffer' })
+  vim.keymap.set({ 'n', 'v' }, '<leader>f', function() require('conform').format { async = true, timeout_ms = 10000 } end, { desc = '[F]ormat buffer' })
 end
 
 -- ============================================================
