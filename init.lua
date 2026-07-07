@@ -737,7 +737,23 @@ do
     },
     ts_ls = {},
     bashls = {},
-    -- pyright = {},
+    pyright = {
+      settings = {
+        python = {
+          analysis = {
+            autoSearchPaths = true,
+            typeCheckingMode = 'basic',
+            useLibraryCodeForTypes = true,
+          },
+        },
+      },
+    },
+    ruff = {
+      on_attach = function(client)
+        -- Pyright provides richer hover text; keep Ruff focused on lint/code actions.
+        client.server_capabilities.hoverProvider = false
+      end,
+    },
     -- rust_analyzer = {},
     --
     -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -803,6 +819,8 @@ do
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'black',
+    'isort',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -826,10 +844,10 @@ do
       -- You can specify filetypes to autoformat on save here:
       local enabled_filetypes = {
         go = true,
+        python = true,
         sh = true,
         bash = true,
         -- lua = true,
-        -- python = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
         return { timeout_ms = 500 }
@@ -843,12 +861,12 @@ do
     -- You can also specify external formatters in here.
     formatters_by_ft = {
       lua = { 'stylua' },
-        go = { 'gofumpt', 'goimports' },
-        sh = { 'shfmt' },
-        bash = { 'shfmt' }
+      go = { 'gofumpt', 'goimports' },
+      python = { 'isort', 'black' },
+      sh = { 'shfmt' },
+      bash = { 'shfmt' },
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
-      -- python = { "isort", "black" },
       --
       -- You can use 'stop_after_first' to run the first available formatter from the list
       -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -954,7 +972,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
