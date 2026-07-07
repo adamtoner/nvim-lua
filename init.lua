@@ -396,10 +396,31 @@ do
   vim.cmd.colorscheme 'tokyonight-night'
 
   vim.pack.add { gh 'ellisonleao/gruvbox.nvim' }
-  require('gruvbox').setup { contrast = 'hard' }
-  vim.o.background = 'dark'
-  vim.cmd.colorscheme 'gruvbox'
+  vim.pack.add {
+    gh 'rebelot/kanagawa.nvim',
+    gh 'EdenEast/nightfox.nvim',
+    gh 'sainnhe/gruvbox-material',
+    gh 'sainnhe/sonokai',
+    gh 'loctvl842/monokai-pro.nvim',
+    gh 'navarasu/onedark.nvim',
+    gh 'nyoom-engineering/oxocarbon.nvim',
+    gh 'tomasr/molokai',
+    gh 'patstockwell/vim-monokai-tasty',
+    gh 'nanotech/jellybeans.vim',
+    gh 'sjl/badwolf',
+    gh 'tpope/vim-vividchalk',
+    gh 'chriskempson/vim-tomorrow-theme',
+    gh 'mkarmona/materialbox',
+    gh 'w0ng/vim-hybrid',
+    gh 'vim-scripts/wombat256.vim',
+  }
 
+  local function setup_gruvbox(overrides)
+    require('gruvbox').setup {
+      contrast = 'hard',
+      overrides = overrides,
+    }
+  end
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
   require('todo-comments').setup { signs = false }
