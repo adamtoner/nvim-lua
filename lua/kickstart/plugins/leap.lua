@@ -6,5 +6,5 @@ vim.pack.add {
   },
 }
 
-vim.keymap.set({ 'n', 'x', 'o' }, 'gs', function() require('leap').leap {} end, { desc = 'Leap forward' })
-vim.keymap.set({ 'n', 'x', 'o' }, 'gS', function() require('leap').leap { backward = true } end, { desc = 'Leap backward' })
+vim.keymap.set({ 'n', 'x', 'o' }, 's', function() require('leap').leap {} end, { desc = 'Leap forward' })
+vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() require('leap').leap { backward = true } end, { desc = 'Leap backward' })
