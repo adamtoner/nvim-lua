@@ -125,15 +125,31 @@ do
   if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
     local ok, osc52 = pcall(require, 'vim.ui.clipboard.osc52')
     if ok then
+      local clipboard_cache = {}
+
+      local function osc52_copy(reg)
+        local copy = osc52.copy(reg)
+        return function(lines, regtype)
+          clipboard_cache[reg] = { vim.deepcopy(lines), regtype }
+          copy(lines, regtype)
+        end
+      end
+
+      local function cached_paste(reg)
+        return function()
+          return clipboard_cache[reg] or {}
+        end
+      end
+
       vim.g.clipboard = {
         name = 'OSC 52',
         copy = {
-          ['+'] = osc52.copy '+',
-          ['*'] = osc52.copy '*',
+          ['+'] = osc52_copy '+',
+          ['*'] = osc52_copy '*',
         },
         paste = {
-          ['+'] = osc52.paste '+',
-          ['*'] = osc52.paste '*',
+          ['+'] = cached_paste '+',
+          ['*'] = cached_paste '*',
         },
       }
     end
