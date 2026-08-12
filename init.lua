@@ -511,6 +511,25 @@ do
       show_hidden = true,
     },
   }
+
+  vim.api.nvim_create_autocmd('VimEnter', {
+    desc = 'Open directory arguments with Oil',
+    once = true,
+    callback = function()
+      local path
+      if vim.fn.argc() == 0 then
+        path = vim.fn.getcwd()
+      elseif vim.fn.argc() == 1 and vim.fn.isdirectory(vim.fn.argv(0)) == 1 then
+        path = vim.fn.argv(0)
+      else
+        return
+      end
+
+      local directory = vim.fs.abspath(path)
+      vim.schedule(function() require('oil').open(directory) end)
+    end,
+  })
+
   vim.keymap.set('n', '-', '<Cmd>Oil<CR>', { desc = 'Open parent directory' })
 end
 
@@ -1102,15 +1121,15 @@ do
   -- require 'kickstart.plugins.autopairs'
   require 'kickstart.plugins.leap'
   require 'kickstart.plugins.harpoon'
-  require('kickstart.plugins.neo-tree').setup {
-    filesystem = {
-      filtered_items = {
-        visible = true,
-        hide_dotfiles = false,
-        hide_gitignored = false,
-      },
-    },
-  }
+  -- require('kickstart.plugins.neo-tree').setup {
+  --   filesystem = {
+  --     filtered_items = {
+  --       visible = true,
+  --       hide_dotfiles = false,
+  --       hide_gitignored = false,
+  --     },
+  --   },
+  -- }
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
