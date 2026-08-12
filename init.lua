@@ -853,6 +853,9 @@ do
     -- You can add other tools here that you want Mason to install
     'black',
     'isort',
+    'jq',
+    'tree-sitter-cli',
+    'xmlformatter',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -879,6 +882,8 @@ do
         python = true,
         sh = true,
         bash = true,
+        json = true,
+        xml = true,
         -- lua = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
@@ -897,6 +902,8 @@ do
       python = { 'isort', 'black' },
       sh = { 'shfmt' },
       bash = { 'shfmt' },
+      json = { 'jq' },
+      xml = { 'xmlformatter' },
       -- rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       --
@@ -906,6 +913,23 @@ do
   }
 
   vim.keymap.set({ 'n', 'v' }, '<leader>f', function() require('conform').format { async = true, timeout_ms = 10000 } end, { desc = '[F]ormat buffer' })
+
+  vim.api.nvim_create_user_command('DataMinify', function()
+    if vim.bo.filetype ~= 'json' then
+      vim.notify('DataMinify supports JSON only; XML whitespace may be significant.', vim.log.levels.WARN)
+      return
+    end
+
+    local input = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), '\n')
+    local result = vim.system({ 'jq', '-c', '.' }, { stdin = input, text = true }):wait()
+    if result.code ~= 0 then
+      vim.notify(vim.trim(result.stderr or 'jq failed to minify JSON'), vim.log.levels.ERROR)
+      return
+    end
+
+    local output = vim.split(vim.trim(result.stdout), '\n', { plain = true })
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+  end, { desc = 'Minify the current JSON buffer' })
 end
 
 -- ============================================================
@@ -1004,8 +1028,14 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc' }
-  require('nvim-treesitter').install(parsers)
+  local parsers = { 'bash', 'c', 'diff', 'html', 'json', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc', 'xml' }
+
+  local function tree_sitter_cli_works()
+    if vim.fn.executable 'tree-sitter' == 0 then return false end
+    return vim.system({ 'tree-sitter', '--version' }, { text = true }):wait().code == 0
+  end
+
+  if tree_sitter_cli_works() then require('nvim-treesitter').install(parsers) end
 
   ---@param buf integer
   ---@param language string
@@ -1041,7 +1071,7 @@ do
       if vim.tbl_contains(installed_parsers, language) then
         -- Enable the parser if it is already installed
         treesitter_try_attach(buf, language)
-      elseif vim.tbl_contains(available_parsers, language) then
+      elseif vim.tbl_contains(available_parsers, language) and tree_sitter_cli_works() then
         -- If a parser is available in `nvim-treesitter`, auto-install it and enable it after the installation is done
         require('nvim-treesitter').install(language):await(function() treesitter_try_attach(buf, language) end)
       else
