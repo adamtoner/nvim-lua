@@ -895,13 +895,12 @@ do
   require('conform').setup {
     notify_on_error = false,
     format_on_save = function(bufnr)
-      -- You can specify filetypes to autoformat on save here:
+      -- Enable formatting on save for these filetypes; format JSON manually with <leader>f.
       local enabled_filetypes = {
         go = true,
         python = true,
         sh = true,
         bash = true,
-        json = true,
         xml = true,
         -- lua = true,
       }
